@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Use the bundled toolchain when this repo includes one; otherwise use the
+# system Node/npm. The deployment package intentionally does not include the
+# local toolchain.
+if [[ -x "$ROOT/.tooling/node/bin/node" ]]; then
+  export PATH="$ROOT/.tooling/node/bin:$PATH"
+fi
+if [[ -f "$ROOT/.tooling/npmrc-user" ]]; then
+  export NPM_CONFIG_USERCONFIG="$ROOT/.tooling/npmrc-user"
+fi
+
+cd "$ROOT"
+
+busy() { lsof -ti "tcp:$1" >/dev/null 2>&1; }
+
+case "${1:-dev}" in
+  dev)
+    for port in 8787 5173; do
+      if busy "$port"; then
+        echo "port $port is already in use — is ./run dev already running?" >&2
+        exit 1
+      fi
+    done
+    exec npm run dev ;;
+  seed)  exec npm run seed ;;
+  eval)  exec npm run eval --workspace @docreview/server ;;
+  test)  exec npm test --workspace @docreview/server ;;
+  smoke) exec npm run smoke ;;
+  reset) rm -rf data/pgdata data/files; echo "database and uploads cleared" ;;
+  node|npm|npx) exec "$@" ;;
+  *) echo "usage: ./run [dev|seed|eval|test|smoke|reset|npm …]" >&2; exit 1 ;;
+esac

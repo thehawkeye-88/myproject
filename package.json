@@ -1,0 +1,25 @@
+{
+  "name": "docreview",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "shared",
+    "server",
+    "web"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,web -c cyan,magenta \"npm:dev:server\" \"npm:dev:web\"",
+    "dev:server": "npm run dev --workspace @docreview/server",
+    "dev:web": "npm run dev --workspace @docreview/web",
+    "seed": "npm run seed --workspace @docreview/server",
+    "test": "npm test --workspace @docreview/server",
+    "build": "npm run build --workspace @docreview/web",
+    "typecheck": "tsc -p server/tsconfig.json --noEmit && tsc -p web/tsconfig.json --noEmit",
+    "smoke": "npm run smoke --workspace @docreview/web",
+    "start": "npm run start --workspace @docreview/server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,12 @@
+# Regenerable. Nothing here is a source of truth.
+node_modules/
+dist/
+data/                  # PGlite database, uploaded blobs, generated samples — ./run seed
+web/scripts/out/       # smoke-test screenshots
+*.log
+
+# A pinned standalone Node, only needed because the system one is broken.
+# See the toolchain note in README.md. 189 MB; never share it.
+.tooling/
+
+.DS_Store
